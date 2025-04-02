@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME}
+  datasource:
+    url: jdbc:sqlserver://${DATABASE_HOST}:${DATABASE_PORT};databaseName=${DATABASE_NAME};trustServerCertificate=true;encrypt=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    initialize: true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: none
+  cloud:
+    config:
+      enabled: false
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+
+application:
+  title: ${APPLICATION_TITLE}
+  version: ${APPLICATION_VERSION}
+
+server:
+  port: ${SERVER_PORT}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
+
+
+jwks:
+  uri: ${JWKS_URI}
+

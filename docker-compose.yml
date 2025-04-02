@@ -1,0 +1,88 @@
+services:
+  postgresdb:
+    container_name: postgrecontainer
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SERVICE_TAGS: dev1
+      SERVICE_NAME: postgresservice
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresvolume:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - spring
+
+  pgadmin:
+    container_name: pgadmincontainer
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_DEFAULT_ADDRESS: 6000
+      PGADMIN_LISTEN_PORT: 6000
+    depends_on:
+      - postgresdb
+    expose:
+      - 6000
+    ports:
+      - 7000:6000
+    volumes:
+      - pgadminvolume:/var/lib/pgadmin
+    networks:
+      - spring
+
+  discoveryserver:
+    image: doukoure93/discoveryserver:latest
+    container_name: discoveryserver
+    ports:
+      - "5002:5002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+
+  gateway:
+    image: doukoure93/gateway:latest
+    container_name: gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+
+  authorizationserver:
+    image: doukoure93/authorizationserver:latest
+    container_name: authorizationserver
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+
+  userservice:
+    image: doukoure93/userservice:latest
+    container_name: userservice
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+
+volumes:
+  postgresvolume:
+  pgadminvolume:
+
+networks:
+  zipkin:
+    driver: bridge
+  spring:
+    driver: bridge

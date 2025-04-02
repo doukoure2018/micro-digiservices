@@ -1,0 +1,18 @@
+ACTIVE_PROFILE: dev
+
+PRIVATE_KEY: "private.key"
+PUBLIC_KEY: "public.key"
+
+POSTGRES_USER: user2711
+POSTGRES_PASSWORD: admin2711
+POSTGRES_HOST: localhost
+POSTGRES_PORT: 5432
+POSTGRES_DATABASE: localdb
+
+# this is for  eureka server
+USER_NAME: admin
+PASSWORD: admin2711
+
+SERVER_PORT: 8080
+
+UI_APP_URL: http://localhost:4200
