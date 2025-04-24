@@ -1,8 +1,10 @@
 package io.digiservices.ebanking.controller;
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.dto.HttpResponse;
 import io.digiservices.ebanking.paylaod.DelegationDto;
 import io.digiservices.ebanking.service.DelegationService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +13,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import static io.digiservices.ebanking.controller.CreditosController.getResponse;
 import static java.time.LocalTime.now;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 
 @RestController
@@ -37,9 +42,9 @@ public class DelegationController {
     }
 
     @GetMapping("/allDelegation")
-    public ResponseEntity<List<DelegationDto>> getAllDelegation()
+    public ResponseEntity<Response> getAllDelegation(HttpServletRequest request)
     {
-        return ResponseEntity.ok(delegationService.getAllDelegation());
+        return ok(getResponse(request, Map.of("delegations",delegationService.getAllDelegation()), "Liste des delegations", OK));
     }
 
     @GetMapping("/{id_delegation}/delegation")

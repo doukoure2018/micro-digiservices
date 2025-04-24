@@ -11,6 +11,7 @@ public interface UserRepository {
     User getUserById(Long userId);
     User updateUser(String userUuid, String firstName, String lastName, String email, String phone, String bio, String address);
     String createUser(String firstName, String lastName, String email, String username, String password);
+    String createAccount(String firstName, String lastName, String email, String username, String password,String roleName);
     AccountToken getAccountToken(String token);
     User verifyPasswordToken(String token);
     User enableMfa(String userUuid);
@@ -26,6 +27,8 @@ public interface UserRepository {
     void resetPassword(String email);
     void doResetPassword(String userUuid, String token, String password, String confirmPassword);
     List<User> getUsers();
+
+    List<Role> getRoles();
     User getAssignee(String ticketUuid);
     Credential getCredential(String userUuid);
     List<Device> getDevices(String userUuid);

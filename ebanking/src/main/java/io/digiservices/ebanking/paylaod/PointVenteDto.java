@@ -13,4 +13,5 @@ public class PointVenteDto {
     private String libele;
     private Long delegation_id;
     private Long agence_id;
+    private String code;
 }

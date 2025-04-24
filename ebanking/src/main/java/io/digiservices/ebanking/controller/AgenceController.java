@@ -1,9 +1,11 @@
 package io.digiservices.ebanking.controller;
 
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.dto.HttpResponse;
 import io.digiservices.ebanking.paylaod.AgenceDto;
 import io.digiservices.ebanking.service.AgenceService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +14,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import static io.digiservices.ebanking.controller.CreditosController.getResponse;
 import static java.time.LocalTime.now;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/ebanking")
@@ -36,15 +41,15 @@ public class AgenceController {
                                 .build());
     }
 
-    @GetMapping("/{delegation_id}/agences")
-    public ResponseEntity<List<AgenceDto>> agences(@PathVariable(name = "delegation_id") Long delegation_id)
+    @GetMapping("/agences/{delegation_id}")
+    public ResponseEntity<Response> agences(@PathVariable(name = "delegation_id") Long delegation_id, HttpServletRequest request)
     {
-        return ResponseEntity.ok(agenceService.getAllAgenceByDelegation(delegation_id));
+        return ok(getResponse(request, Map.of("agences",agenceService.getAllAgenceByDelegation(delegation_id)), "Liste des Agences", OK));
     }
 
-    @GetMapping("/{agence_id}/agence")
-    public ResponseEntity<AgenceDto> agence(@PathVariable(name = "agence_id") Long agence_id)
+    @GetMapping("/agence/{agence_id}")
+    public ResponseEntity<Response> agence(@PathVariable(name = "agence_id") Long agence_id, HttpServletRequest request)
     {
-        return ResponseEntity.ok(agenceService.getAgenceById(agence_id));
+        return ok(getResponse(request, Map.of("agence",agenceService.getAgenceById(agence_id)), "Liste des Agences", OK));
     }
 }

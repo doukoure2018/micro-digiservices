@@ -35,7 +35,7 @@ public class ResourceServerConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests( authorize -> authorize
-                        .requestMatchers("/user/register/**", "/user/verify/account/**", "/user/resetpassword/**", "/user/image/**", "/authorization/**").permitAll()
+                        .requestMatchers("/user/register/**", "/user/verify/account/**", "/user/resetpassword/**", "/user/image/**", "/authorization/**","/ebanking/search/**","/ebanking/typeCredit/**","/ebanking/allDelegation/**","/ebanking/agences/**","/ebanking/pointventes/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .accessDeniedHandler(new GatewayAccessDeniedHandler())
@@ -50,7 +50,7 @@ public class ResourceServerConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(List.of("http://securedoc.com", "http://192.168.1.159:3000", "http://localhost:4200","http://localhost:4200", "100.14.214.212:3000",  "http://96.255.228.129:3000", "http://localhost:4200","http://localhost:4200", "http://localhost:3000", "http://securecapita.org", "http://192.168.1.216:3000"));
+        corsConfiguration.setAllowedOrigins(List.of("http://securedoc.com", "http://192.168.1.159:3000", "100.14.214.212:3000",  "http://96.255.228.129:3000", "http://localhost:4200", "http://localhost:3000", "http://securecapita.org", "http://192.168.1.216:3000"));
         corsConfiguration.setAllowedHeaders(Arrays.asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS));
         corsConfiguration.setExposedHeaders(Arrays.asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS));
         corsConfiguration.setAllowedMethods(Arrays.asList(GET.name(), POST.name(), PUT.name(), PATCH.name(), DELETE.name(), OPTIONS.name()));

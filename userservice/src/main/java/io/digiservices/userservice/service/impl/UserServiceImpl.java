@@ -4,6 +4,7 @@ import io.digiservices.userservice.event.Event;
 import io.digiservices.userservice.exception.ApiException;
 import io.digiservices.userservice.model.Credential;
 import io.digiservices.userservice.model.Device;
+import io.digiservices.userservice.model.Role;
 import io.digiservices.userservice.model.User;
 import io.digiservices.userservice.repository.UserRepository;
 import io.digiservices.userservice.service.UserService;
@@ -26,8 +27,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static io.digiservices.userservice.constant.Constants.PHOTO_DIRECTORY;
-import static io.digiservices.userservice.enumeration.EventType.RESETPASSWORD;
-import static io.digiservices.userservice.enumeration.EventType.USER_CREATED;
+import static io.digiservices.userservice.enumeration.EventType.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.WordUtils.capitalizeFully;
@@ -37,8 +37,8 @@ import static org.apache.commons.lang.WordUtils.capitalizeFully;
 @Slf4j
 public class UserServiceImpl  implements UserService {
     private final UserRepository userRepository;
-    private BCryptPasswordEncoder encoder;
-    private ApplicationEventPublisher publisher;
+    private final BCryptPasswordEncoder encoder;
+    private final ApplicationEventPublisher publisher;
 
     @Value("${ui.app.url}")
     private String uiAppUrl;
@@ -62,7 +62,17 @@ public class UserServiceImpl  implements UserService {
     public void createUser(String firstName, String lastName, String email, String username, String password)
     {
         // firstly get the token
-        var token = userRepository.createUser(firstName,lastName,email,username,password);
+        var token = userRepository.createUser(firstName,lastName,email,username,encoder.encode(password));
+        System.out.println(token);
+        publisher.publishEvent(new Event(USER_CREATED, Map.of("token", token,"name",capitalizeFully(firstName),"email",email)));
+
+    }
+
+    @Override
+    public void createAccount(String firstName, String lastName, String email, String username, String password,String roleName)
+    {
+        var token = userRepository.createAccount(firstName,lastName,email,username,encoder.encode(password),roleName);
+        System.out.println(token);
         publisher.publishEvent(new Event(USER_CREATED, Map.of("token", token,"name",capitalizeFully(firstName),"email",email)));
 
     }
@@ -156,13 +166,13 @@ public class UserServiceImpl  implements UserService {
         var passwordToken = userRepository.getPasswordToken(user.getUserId());
         if(!nonNull(passwordToken)){
              var newToken = userRepository.createPasswordToken(user.getUserId());
-             //publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", newToken,"email",email, "name", capitalizeFully(user.getFirstName()))));
+             publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", newToken,"email",email, "name", Objects.requireNonNull(capitalizeFully(user.getFirstName())))));
         } else if (passwordToken.isExpired()) {
             userRepository.deletePasswordToken(user.getUserId());
             var newToken = userRepository.createPasswordToken(user.getUserId());
-            //publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", newToken,"email",email, "name", capitalizeFully(user.getFirstName()))));
+            publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", newToken,"email",email, "name", capitalizeFully(user.getFirstName()))));
         }else {
-           // publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", passwordToken.getToken(),"email",email, "name", capitalizeFully(user.getFirstName()))));
+            publisher.publishEvent(new Event(RESETPASSWORD, Map.of("token", passwordToken.getToken(),"email",email, "name", capitalizeFully(user.getFirstName()))));
         }
     }
 
@@ -183,6 +193,11 @@ public class UserServiceImpl  implements UserService {
     @Override
     public List<User> getUsers() {
         return userRepository.getUsers();
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        return userRepository.getRoles();
     }
 
     @Override

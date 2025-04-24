@@ -1,17 +1,25 @@
 package io.digiservices.ebanking.controller;
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.paylaod.CreditoPKId;
 import io.digiservices.ebanking.paylaod.CreditosDto;
 import io.digiservices.ebanking.service.CreditosService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static java.time.LocalTime.now;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/ebanking/ecredit")
+@RequestMapping("/ebanking")
 @AllArgsConstructor
 public class CreditosController {
     private CreditosService creditosService;
@@ -32,9 +40,9 @@ public class CreditosController {
 
 
     @GetMapping("/{codCliente}/creditos")
-    public ResponseEntity<List<CreditosDto>> getAllCreditosByCodCliente(@PathVariable(name = "codCliente") String codCliente)
+    public ResponseEntity<Response> getAllCreditosByCodCliente(@PathVariable(name = "codCliente") String codCliente,HttpServletRequest request)
     {
-        return ResponseEntity.ok(creditosService.getAllCreditosByClientes(codCliente));
+        return ok(getResponse(request, Map.of("credits",creditosService.getAllCreditosByClientes(codCliente)), "Credits retreived ", OK));
     }
 
 
@@ -109,6 +117,10 @@ public class CreditosController {
     )
     {
         return new ResponseEntity<>(creditosService.updateInstado(numCredito,codAgencia,indEstado),HttpStatus.OK);
+    }
+
+    public static Response getResponse(HttpServletRequest request, Map<?, ?> data, String message, HttpStatus status){
+        return new Response(now().toString(), status.value(), request.getRequestURI(), status, message, EMPTY, data);
     }
 
 }

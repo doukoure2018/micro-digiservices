@@ -18,3 +18,5 @@ SERVER_PORT: 8085
 UI_APP_URL: http://localhost:4200
 
 JWKS_URI: http://localhost:8080/oauth2/jwks
+
+KAFKA_SERVER_URL: localhost:9092

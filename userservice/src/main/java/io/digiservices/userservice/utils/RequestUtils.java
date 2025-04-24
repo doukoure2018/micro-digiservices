@@ -7,6 +7,7 @@ import io.digiservices.userservice.exception.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.*;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
@@ -33,6 +34,10 @@ public class RequestUtils {
             throw new ApiException(exception.getMessage());
         }
     };
+
+    public static Response handleErrorResponse(String message, String exception, HttpServletRequest request, HttpStatusCode status) {
+        return new Response(now().toString(), status.value(), request.getRequestURI(), HttpStatus.valueOf(status.value()), message, exception, emptyMap());
+    }
 
     public static void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         if(exception instanceof AccessDeniedException) {

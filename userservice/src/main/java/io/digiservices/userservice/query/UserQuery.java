@@ -23,7 +23,10 @@ public class UserQuery {
                 u.user_uuid,
                 u.bio,
                 u.phone,
-                u.address
+                u.address,
+                u.delegation_id,
+                u.agence_id,
+                u.pointvente_id
                 FROM users u JOIN user_roles ur ON ur.user_id = u.user_id JOIN roles r ON r.role_id = ur.role_id  WHERE u.user_uuid =:userUuid;
               """;
     public static final String SELECT_USER_BY_ID_QUERY=
@@ -80,8 +83,14 @@ public class UserQuery {
                                 """;
     public static final String CREATE_USER_STORED_PROCEDURE=
                                 """
-                                   CALL create_user(:userUuid, :firstName, :lastName, :email, :username, :password, :credentialUuid,:token,:memberId)
+                                   CALL create_user(:userUuid, :firstName, :lastName, :email, :username, :password, :credentialUuid, :token, :memberId)
                                 """;
+
+    public static final String CREATE_ACCOUNT_STORED_PROCEDURE=
+            """
+               CALL create_account(:userUuid, :firstName, :lastName, :email, :username, :password, :credentialUuid, :token, :memberId,:roleName)
+            """;
+
     public static final String SELECT_ACCOUNT_TOKEN_QUERY=
                                 """
                                    SELECT account_token_id, token, user_id, (created_at + '24 HOURS') < NOW() AS expired, created_at, updated_at FROM account_tokens WHERE token=:token;
@@ -195,5 +204,11 @@ public class UserQuery {
             """
                 INSERT INTO password_tokens (user_id, token) VALUES(:userId, :token)
             """;
+
+
+    public static final String SELECT_ROLES_USER_QUERY =
+                    """
+                       SELECT role_id,name,authority FROM roles;
+                    """;
 
 }

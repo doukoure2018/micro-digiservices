@@ -2,6 +2,7 @@ package io.digiservices.userservice.service;
 
 import io.digiservices.userservice.model.Credential;
 import io.digiservices.userservice.model.Device;
+import io.digiservices.userservice.model.Role;
 import io.digiservices.userservice.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +13,7 @@ public interface UserService {
     User getUserByUuid(String userUuid);
     User updateUser(String userUuid, String firstName, String lastName, String email, String phone, String bio, String address);
     void createUser(String firstName, String lastName, String email, String username, String password);
+    void createAccount(String firstName, String lastName, String email, String username, String password,String roleName);
     void verifyAccount(String token);
     User verifyPasswordToken(String token);
     User enableMfa(String userUuid);
@@ -26,6 +28,8 @@ public interface UserService {
     void resetPassword(String email);
     void doResetPassword(String userUuid, String token, String password, String confirmPassword);
     List<User> getUsers();
+
+    List<Role> getRoles();
     User getAssignee(String ticketUuid);
     Credential getCredential(String userUuid);
     List<Device> getDevices(String userUuid);

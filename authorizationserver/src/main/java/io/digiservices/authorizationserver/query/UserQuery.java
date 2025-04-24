@@ -70,4 +70,6 @@ public class UserQuery {
                                 """
                                    INSERT INTO devices (user_id, device, client, ip_address) VALUES (:userId, :device, :client, :ipAddress)
                                 """;
+
+
 }

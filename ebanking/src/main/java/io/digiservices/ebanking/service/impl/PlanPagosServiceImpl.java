@@ -29,11 +29,9 @@ public class PlanPagosServiceImpl implements PlanPagosService {
     @Override
     public List<PlanPagosDto> getAllPlanPagosByCreditos(Long numCredito)
     {
-//        List<PlanPagos> planPagos=planPagosRepository.getAllCredit(numCredito);
-//        return planPagos.stream().map((planPagos1)->modelMapper.map(planPagos1,PlanPagosDto.class))
-//                        .collect(Collectors.toList());
-
-        return null;
+        List<PlanPagos> planPagos=planPagosRepository.findAllByPlanPagosPKIdNumCredito(numCredito);
+        return planPagos.stream().map((planPagos1)->modelMapper.map(planPagos1,PlanPagosDto.class))
+                        .collect(Collectors.toList());
     }
 
     @Override

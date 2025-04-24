@@ -1,8 +1,10 @@
 package io.digiservices.ebanking.controller;
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.dto.HttpResponse;
 import io.digiservices.ebanking.paylaod.PointVenteDto;
 import io.digiservices.ebanking.service.PointVenteService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +13,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import static io.digiservices.ebanking.controller.CreditosController.getResponse;
 import static java.time.LocalTime.now;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/ebanking")
@@ -35,15 +40,15 @@ public class PointVenteController {
                                 .build());
     }
 
-    @GetMapping("/{agence_id}/pointventes")
-    public ResponseEntity<List<PointVenteDto>> pointventes(@PathVariable(name = "agence_id") Long agence_id)
+    @GetMapping("/pointventes/{agence_id}")
+    public ResponseEntity<Response> pointventes(@PathVariable(name = "agence_id") Long agence_id, HttpServletRequest request)
     {
-        return ResponseEntity.ok(pointVenteService.getAllPointeVenteByAgence(agence_id));
+        return ok(getResponse(request, Map.of("pointVentes",pointVenteService.getAllPointeVenteByAgence(agence_id)), "Liste des Points de vente", OK));
     }
 
-    @GetMapping("/{idPs}/pointvente")
-    public ResponseEntity<PointVenteDto> pointvente(@PathVariable(name = "idPs") Long idPs)
+    @GetMapping("/pointvente/{idPs}")
+    public ResponseEntity<Response> pointvente(@PathVariable(name = "idPs") Long idPs, HttpServletRequest request)
     {
-        return ResponseEntity.ok(pointVenteService.getPsById(idPs));
+        return ok(getResponse(request, Map.of("pointVente",pointVenteService.getPsById(idPs)), "Information Point de Vente", OK));
     }
 }

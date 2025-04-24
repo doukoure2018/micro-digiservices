@@ -37,6 +37,43 @@ services:
     networks:
       - spring
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - spring
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      # Add these configurations to increase message size limits
+      KAFKA_MESSAGE_MAX_BYTES: 1300000000
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 1300000000
+      KAFKA_FETCH_MESSAGE_MAX_BYTES: 1300000000
+      # You might also need these
+      KAFKA_MAX_REQUEST_SIZE: 1300000000
+      KAFKA_SOCKET_REQUEST_MAX_BYTES: 1300000000
+    depends_on:
+      - zookeeper
+    networks:
+      - spring
+
   discoveryserver:
     image: doukoure93/discoveryserver:latest
     container_name: discoveryserver
@@ -46,6 +83,8 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - spring
+    depends_on:
+      - postgresdb
 
   gateway:
     image: doukoure93/gateway:latest
@@ -56,6 +95,8 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - spring
+    depends_on:
+      - discoveryserver
 
   authorizationserver:
     image: doukoure93/authorizationserver:latest
@@ -66,6 +107,9 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - spring
+    depends_on:
+      - postgresdb
+      - discoveryserver
 
   userservice:
     image: doukoure93/userservice:latest
@@ -76,6 +120,48 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - spring
+    depends_on:
+      - postgresdb
+      - kafka
+      - discoveryserver
+
+  ebanking:
+    image: doukoure93/ebanking:latest
+    container_name: ebanking
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+    depends_on:
+      - discoveryserver
+
+  ecreditservice:
+    image: doukoure93/ecreditservice:latest
+    container_name: ecreditservice
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+    depends_on:
+      - postgresdb
+      - discoveryserver
+
+  notificationservice:
+    image: doukoure93/notificationservice:latest
+    container_name: notificationservice
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - spring
+    depends_on:
+      - kafka
+      - discoveryserver
 
 volumes:
   postgresvolume:

@@ -9,18 +9,28 @@ spring:
     gateway:
       mvc:
         routes:
-          - id: authorization-server
-            uri: lb://AUTHORIZATIONSERVER
-            predicates:
-              - Path=/authorization/**
+#          - id: authorization-server
+#            uri: lb://AUTHORIZATIONSERVER
+#            predicates:
+#              - Path=/authorization/**
           - id: user-service
             uri: lb://USERSERVICE
             predicates:
               - Path=/user/**
           - id: ebanking
-            uri: lb://ebanking
+            uri: lb://EBANKING
             predicates:
               - Path=/ebanking/**
+
+          - id: notification-service
+            uri: lb://NOTIFICATIONSERVICE
+            predicates:
+              - Path=/notification/**
+
+          - id: ecredit-service
+            uri: lb://ECREDITSERVICE
+            predicates:
+              - Path=/ecredit/**
 
 eureka:
   instance:

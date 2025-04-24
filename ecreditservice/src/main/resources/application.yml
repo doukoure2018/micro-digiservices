@@ -1,0 +1,82 @@
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+  application:
+    name: ecreditservice
+  cloud:
+    discovery:
+      client:
+        composite-indicator:
+          enabled: true
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      connection-test-query: SELECT 1
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    database: POSTGRESQL
+    open-in-view: false
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: ${POSTGRES_DATABASE}
+
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_SERVER_URL}
+    template:
+      default-topic: NOTIFICATION_TOPIC
+    producer:
+      group-id: topicgroupid
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # Add producer configuration for large messages
+      properties:
+        max.request.size: 1300000000
+    properties:
+      spring:
+        json:
+          type:
+            mapping: Notification:io.digiservices.userservice.domain.Notification
+      # Add global properties for handling large messages
+      message.max.bytes: 1300000000
+      max.request.size: 1300000000
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
+
+ui:
+  app:
+    url: ${UI_APP_URL}
+
+
+key:
+  private: ${PRIVATE_KEY}
+  public: ${PUBLIC_KEY}
+
+
+server:
+  port: ${SERVER_PORT}
+
+jwks:
+  uri: ${JWKS_URI}
+
+

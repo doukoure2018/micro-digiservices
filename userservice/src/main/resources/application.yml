@@ -35,6 +35,27 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: ${POSTGRES_DATABASE}
 
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_SERVER_URL}
+    template:
+      default-topic: NOTIFICATION_TOPIC
+    producer:
+      group-id: topicgroupid
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # Add producer configuration for large messages
+      properties:
+        max.request.size: 1300000000
+    properties:
+      spring:
+        json:
+          type:
+            mapping: Notification:io.digiservices.userservice.domain.Notification
+      # Add global properties for handling large messages
+      message.max.bytes: 1300000000
+      max.request.size: 1300000000
+
 eureka:
   instance:
     prefer-ip-address: true

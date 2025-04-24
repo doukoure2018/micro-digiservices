@@ -84,9 +84,24 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public String createUser(String firstName, String lastName, String email, String username, String password) {
         try {
-            var token = UUID.randomUUID().toString();
-            jdbcClient.sql(CREATE_USER_STORED_PROCEDURE).paramSource(getParamSource( firstName,  lastName,  email,  username,  password,  token)).query(User.class).single();
-            return  token;
+            var token = randomUUUID.get();
+            jdbcClient.sql(CREATE_USER_STORED_PROCEDURE).paramSource(getParamSource(firstName, lastName, email, username, password, token)).update();
+            return token;
+        }catch (DuplicateKeyException exception){
+            log.error(exception.getMessage());
+            throw  new ApiException("Email is already in Use. Please try again");
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw  new ApiException("An error occurred please try again");
+        }
+    }
+
+    @Override
+    public String createAccount(String firstName, String lastName, String email, String username, String password, String roleName) {
+        try {
+            var token = randomUUUID.get();
+            jdbcClient.sql(CREATE_ACCOUNT_STORED_PROCEDURE).paramSource(getParamSourceAccount(firstName, lastName, email, username, password, token, roleName)).update();
+            return token;
         }catch (DuplicateKeyException exception){
             log.error(exception.getMessage());
             throw  new ApiException("Email is already in Use. Please try again");
@@ -238,6 +253,19 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+
+    @Override
+    public List<Role> getRoles() {
+        try {
+            return jdbcClient.sql(SELECT_ROLES_USER_QUERY).query(Role.class).list();
+        }catch (EmptyResultDataAccessException exception){
+            log.error(exception.getMessage());
+            throw  new ApiException("Roles Not Found. Please try again");
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw  new ApiException("An error occurred please try again");
+        }
+    }
     @Override
     public User getAssignee(String ticketUuid) {
         try {
@@ -323,7 +351,8 @@ public class UserRepositoryImpl implements UserRepository {
             return jdbcClient.sql(SELECT_PASSWORD_TOKEN_BY_USER_ID_QUERY).param("userId",userId).query(PasswordToken.class).single();
         }catch (EmptyResultDataAccessException exception){
             log.error(exception.getMessage());
-            throw  new ApiException("Invalid Link. Please try again");
+            //throw  new ApiException("Invalid Link. Please try again");
+            return null;
         }catch (Exception e){
             log.error(e.getMessage());
             throw  new ApiException("An error occurred please try again");
@@ -346,7 +375,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deletePasswordToken(String token) {
         try {
-            jdbcClient.sql("").param("token",token).update();
+            jdbcClient.sql(DELETE_PASSWORD_TOKEN_QUERY).param("token",token).update();
         }catch (EmptyResultDataAccessException exception){
             log.error(exception.getMessage());
             throw  new ApiException("Token not Found. Please try again");
@@ -385,8 +414,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public String createPasswordToken(Long userId) {
         try {
-            var token = randomUUID.get();
-            jdbcClient.sql(CREATE_PASSWORD_TOKEN_QUERY).params(Map.of("userId",userId,"token", token)).query(String.class).single();
+            var token = randomUUUID.get();
+            jdbcClient.sql(CREATE_PASSWORD_TOKEN_QUERY).params(Map.of("userId",userId,"token", token)).update();
             return token;
         }catch (EmptyResultDataAccessException exception){
             log.error(exception.getMessage());
@@ -405,16 +434,31 @@ public class UserRepositoryImpl implements UserRepository {
                 .addValue("qrCodeImageUri",qrCodeImageUri.apply(qrCodeSecret), VARCHAR);
     }
 
-    private SqlParameterSource getParamSource(String firstName, String lastName, String email, String username, String password, String token)
+    private SqlParameterSource getParamSourceAccount(String firstName, String lastName, String email, String username, String password, String token,String roleName)
     {
         return new MapSqlParameterSource()
-                .addValue("userUuid",randomUUID.get(), VARCHAR)
+                .addValue("userUuid",randomUUUID.get(), VARCHAR)
                 .addValue("firstName",firstName, VARCHAR)
                 .addValue("lastName",lastName, VARCHAR)
                 .addValue("email",email.trim().toLowerCase(), VARCHAR)
                 .addValue("username",username.trim().toLowerCase(), VARCHAR)
                 .addValue("memberId", memberId.get(), VARCHAR)
-                .addValue("credentialUuid", randomUUID.get(), VARCHAR)
+                .addValue("credentialUuid", randomUUUID.get(), VARCHAR)
+                .addValue("password",password, VARCHAR)
+                .addValue("token",token, VARCHAR)
+                .addValue("roleName",roleName, VARCHAR);
+    }
+
+    private SqlParameterSource getParamSource(String firstName, String lastName, String email, String username, String password, String token)
+    {
+        return new MapSqlParameterSource()
+                .addValue("userUuid",randomUUUID.get(), VARCHAR)
+                .addValue("firstName",firstName, VARCHAR)
+                .addValue("lastName",lastName, VARCHAR)
+                .addValue("email",email.trim().toLowerCase(), VARCHAR)
+                .addValue("username",username.trim().toLowerCase(), VARCHAR)
+                .addValue("memberId", memberId.get(), VARCHAR)
+                .addValue("credentialUuid", randomUUUID.get(), VARCHAR)
                 .addValue("password",password, VARCHAR)
                 .addValue("token",token, VARCHAR);
     }

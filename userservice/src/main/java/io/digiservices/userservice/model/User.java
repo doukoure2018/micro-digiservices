@@ -31,4 +31,8 @@ public class User {
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
     private boolean enabled;
+
+    private Long delegationId;
+    private Long agenceId;
+    private Long pointventeId;
 }

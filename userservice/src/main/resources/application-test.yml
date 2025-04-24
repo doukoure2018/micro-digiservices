@@ -15,3 +15,5 @@ PASSWORD: admin2711
 SERVER_PORT: 8080
 
 JWKS_URI: http://localhost:8080/oauth2/jwks
+
+KAFKA_SERVER_URL: http://localhost:9092

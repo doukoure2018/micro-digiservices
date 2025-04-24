@@ -1,15 +1,24 @@
 package io.digiservices.ebanking.controller;
 
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.paylaod.SG_USUARIOSDto;
 import io.digiservices.ebanking.paylaod.UsariosPKId;
 import io.digiservices.ebanking.service.SG_USUARIOSService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static io.digiservices.ebanking.controller.CreditosController.getResponse;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/ebanking")
@@ -48,13 +57,14 @@ public class UsuariosController {
     }
 
     @GetMapping("/{codAgencia}/{codPuesto}/{indActivo}/getListUsuariosByCodAgencia")
-    public ResponseEntity<List<SG_USUARIOSDto>> getListUsuariosByCodAgencia(
+    public ResponseEntity<Response> getListUsuariosByCodAgencia(
+            @NotNull Authentication authentication,
             @PathVariable(value="codAgencia") String codAgencia,
             @PathVariable(value = "codPuesto") String codPuesto,
-            @PathVariable(value = "indActivo") String indActivo
+            @PathVariable(value = "indActivo") String indActivo,
+            HttpServletRequest request
     ){
-        return ResponseEntity.ok(sg_usuariosService.getListUsuariosByCodAgencia(codAgencia,codPuesto,indActivo));
-
+        return ok(getResponse(request, Map.of("usuarios",sg_usuariosService.getListUsuariosByCodAgencia(codAgencia,codPuesto,indActivo)), "Liste des Points de vente", OK));
     }
 
     @GetMapping("/{codEmpresa}/{codAgencia}/{codUsuarios}/getActiveUser")

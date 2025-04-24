@@ -1,9 +1,6 @@
 package io.digiservices.userservice.resource;
 import io.digiservices.userservice.domain.Response;
-import io.digiservices.userservice.dto.PasswordRequest;
-import io.digiservices.userservice.dto.ResetPasswordRequest;
-import io.digiservices.userservice.dto.RoleRequest;
-import io.digiservices.userservice.dto.UserRequest;
+import io.digiservices.userservice.dto.*;
 import io.digiservices.userservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +36,13 @@ public class UserResource {
         return created(getUri()).body(getResponse(request, emptyMap(), "Account created. Check your email to enable your account", CREATED));
     }
 
+    // Create User when logging
+    @PostMapping("/createAccount")
+    public ResponseEntity<Response> createAccount(@NotNull Authentication authentication, @RequestBody UserAccount user, HttpServletRequest request) {
+        userService.createAccount(user.getFirstName(), user.getLastName(), user.getEmail(), user.getUsername(), user.getPassword(), user.getRoleName());
+        return created(getUri()).body(getResponse(request, emptyMap(), "Account created. Check your email to enable your account", CREATED));
+    }
+
     // When user is not logged in
     @GetMapping("/verify/account")
     public ResponseEntity<Response> verifyAccount(@RequestParam("token") String token, HttpServletRequest request) {
@@ -69,11 +73,18 @@ public class UserResource {
         return ok(getResponse(request, Map.of("user",user,"devices",devices), "Profile retrieved", OK));
     }
 
+    @GetMapping("/instanceUser")
+    public ResponseEntity<Response> getUserInfo(@NotNull Authentication authentication, HttpServletRequest request) {
+        System.out.println(authentication.getName());
+        var user= userService.getUserByUuid(authentication.getName());
+        return ok(getResponse(request, Map.of("user",user), "user retrieved", OK));
+    }
+
     // When user is  logged in
     @GetMapping("/userUuid")
     public ResponseEntity<Response> getUserUuid(@NotNull Authentication authentication,@PathVariable("userUuid") String userUuid, HttpServletRequest request) {
         var user= userService.getUserByUuid(userUuid);
-        return ok(getResponse(request, Map.of("user",user), "Profile retrieved", OK));
+        return ok(getResponse(request, Map.of("user", user), "Profile retrieved", OK));
     }
 
 
@@ -143,21 +154,21 @@ public class UserResource {
     }
 
     // When user is not logged in
-    @PostMapping("/resetPassword")
+    @PostMapping("/resetpassword")
     public ResponseEntity<Response> resetPassword(@RequestParam("email") String email, HttpServletRequest request) {
          userService.resetPassword(email);
         return ok(getResponse(request, emptyMap(), "We sent you an email for you to reset your password", OK));
     }
 
     // When user is not logged in
-    @GetMapping("/resetPassword/verify")
+    @GetMapping("/verify/password")
     public ResponseEntity<Response> verifyPassword(@RequestParam("token") String token, HttpServletRequest request) {
         var user = userService.verifyPasswordToken(token);
         return ok(getResponse(request, Map.of("user",user), "Enter your new password", OK));
     }
 
     // When user is not logged in
-    @GetMapping("/resetPassword/reset")
+    @PostMapping("/resetpassword/reset")
     public ResponseEntity<Response> doResetPassword(@RequestBody ResetPasswordRequest passwordRequest, HttpServletRequest request) {
         userService.doResetPassword(passwordRequest.getUserUuid(),passwordRequest.getToken(),passwordRequest.getPassword(),passwordRequest.getConfirmPassword());
         return ok(getResponse(request, emptyMap(), "Password reset Successfully. You may login now", OK));
@@ -167,7 +178,12 @@ public class UserResource {
     // When user is logged in
     @GetMapping("/list")
     public ResponseEntity<Response> getUsers(@NotNull Authentication authentication, HttpServletRequest request) {
-        return ok(getResponse(request, Map.of("user",userService.getUsers()), "User Updated Successfully", OK));
+        return ok(getResponse(request, Map.of("users",userService.getUsers()), "List of Users Retreived Successfully", OK));
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<Response> getRoles(@NotNull Authentication authentication, HttpServletRequest request) {
+        return ok(getResponse(request, Map.of("roles",userService.getRoles()), "List of Roles Retreived Successfully", OK));
     }
 
     // When user is logged in
@@ -183,6 +199,6 @@ public class UserResource {
     }
 
     private URI getUri() {
-        return URI.create("/user/profile/<userId>");
+        return URI.create("/user/profile/userId");
     }
 }

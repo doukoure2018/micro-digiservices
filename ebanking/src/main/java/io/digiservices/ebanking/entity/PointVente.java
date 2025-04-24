@@ -22,4 +22,5 @@ public class PointVente {
     @ManyToOne
     @JoinColumn(name = "agence_id",nullable = false)
     private Agence agence;
+    private String code;
 }

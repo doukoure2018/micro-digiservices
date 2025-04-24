@@ -1,8 +1,11 @@
 package io.digiservices.ebanking.controller;
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.paylaod.PlanPagosDto;
 import io.digiservices.ebanking.service.PlanPagosService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +13,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import static java.time.LocalTime.now;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/digi/ebanking")
+@RequestMapping("/ebanking")
 public class PlanPagosController {
 
     private PlanPagosService planPagosService;
@@ -23,9 +32,9 @@ public class PlanPagosController {
     }
 
     @GetMapping("/{numCredito}/planPagos")
-    public ResponseEntity<List<PlanPagosDto>> getAllPlanPagosByCreditos(@PathVariable(name = "numCredito") Long numCredito)
+    public ResponseEntity<Response> getAllPlanPagosByCreditos(@PathVariable(name = "numCredito") Long numCredito, HttpServletRequest request)
     {
-        return ResponseEntity.ok(planPagosService.getAllPlanPagosByCreditos(numCredito));
+        return ok(getResponse(request, Map.of("planpagos",planPagosService.getAllPlanPagosByCreditos(numCredito)), "All Plans pagos for  Credit "+numCredito, OK));
     }
 
     @GetMapping("/{codAgencia}/{start}/{end}/TT1")
@@ -81,5 +90,10 @@ public class PlanPagosController {
     )
     {
        return ResponseEntity.ok(planPagosService.getAgeOfRetardCredit(numCredito,indEstado));
+    }
+
+
+    public static Response getResponse(HttpServletRequest request, Map<?, ?> data, String message, HttpStatus status){
+        return new Response(now().toString(), status.value(), request.getRequestURI(), status, message, EMPTY, data);
     }
 }

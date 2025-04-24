@@ -17,11 +17,13 @@
 		<module>gateway</module>
 		<module>userservice</module>
 		<module>ebanking</module>
-	</modules>
+		<module>notificationservice</module>
+        <module>ecreditservice</module>
+    </modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>21</maven.compiler.release>
 		<spring.boot.maven.plugin.version>3.4.3</spring.boot.maven.plugin.version>
 		<spring.boot.dependencies.version>3.4.3</spring.boot.dependencies.version>
 		<spring-cloud.version>2024.0.0</spring-cloud.version>

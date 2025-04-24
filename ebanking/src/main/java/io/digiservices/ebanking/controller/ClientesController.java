@@ -1,21 +1,30 @@
 package io.digiservices.ebanking.controller;
 
+import io.digiservices.ebanking.domain.Response;
 import io.digiservices.ebanking.paylaod.ClientesDto;
 import io.digiservices.ebanking.paylaod.ClientesPKId;
 import io.digiservices.ebanking.paylaod.ClientesResponse;
 import io.digiservices.ebanking.service.ClientesService;
 import io.digiservices.ebanking.utils.AppConstants;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import static io.digiservices.ebanking.controller.CreditosController.getResponse;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/ebanking/ecredit")
+@RequestMapping("/ebanking")
 public class ClientesController {
 
     private ClientesService clientesService;
@@ -85,13 +94,10 @@ public class ClientesController {
         return clientesService.existCodClienteMig(codClienteMig);
     }
 
-
     @GetMapping("/search")
-    public ResponseEntity<ClientesDto> searchClientes(
-            @RequestParam("query") String query
-    )
+    public ResponseEntity<Response> searchClientes(@RequestParam("query") String query, HttpServletRequest request)
     {
-        return ResponseEntity.ok(clientesService.searchsClientes(query));
+        return ok(getResponse(request, Map.of("clientes",clientesService.searchsClientes(query)), "Membre Trouvé", OK));
     }
 
     @GetMapping("/{codAgencia}/searchByCodAgencia")
