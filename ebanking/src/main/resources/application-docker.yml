@@ -1,10 +1,10 @@
 spring:
   application:
-    name: ${APPLICATION_NAME}
+    name: EBANKING
   datasource:
-    url: jdbc:sqlserver://${DATABASE_HOST}:${DATABASE_PORT};databaseName=${DATABASE_NAME};trustServerCertificate=true;encrypt=true
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:sqlserver://postgresdb:1433;databaseName=BDCRG;trustServerCertificate=true;encrypt=true
+    username: sa
+    password: doukoure93
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
     initialize: true
   jpa:
@@ -16,12 +16,11 @@ spring:
   cloud:
     config:
       enabled: false
-  profiles:
-    active: default
+
 
 application:
-  title: ${APPLICATION_TITLE}
-  version: ${APPLICATION_VERSION}
+  title: DIGICRG-MICROSERVICE
+  version: v02
 
 server:
   port: 8081
@@ -31,9 +30,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
-
+      defaultZone: http://admin:admin2711@discoveryserver:5002/eureka/
 
 jwks:
-  uri: ${JWKS_URI}
-
+  uri: http://authorizationserver:8080/oauth2/jwks

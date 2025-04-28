@@ -8,10 +8,10 @@ spring:
     cache: false
 
   mail:
-    host: ${EMAIL_HOST}
-    port: ${EMAIL_PORT}
-    username: ${EMAIL_ID}
-    password: ${EMAIL_PASSWORD}
+    host: smtp.gmail.com
+    port: 587
+    username: douklifsa93@gmail.com
+    password: uppv zody hnsl bbzu
     properties:
       mail:
         smtp:
@@ -23,7 +23,7 @@ spring:
             enable: true
             required: true
     verify:
-      host: ${VERIFY_EMAIL_HOST}
+      host: http://localhost:4200
     default-encoding: UTF-8
 
   cloud:
@@ -31,12 +31,11 @@ spring:
       client:
         composite-indicator:
           enabled: true
-  profiles:
-    active: ${ACTIVE_PROFILE:dev}
+
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://postgresdb:5432/localdb
+    username: user2711
+    password: admin2711
     hikari:
       connection-test-query: SELECT 1
   main:
@@ -54,18 +53,17 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: ${POSTGRES_DATABASE}
+        default_schema: localdb
 
   kafka:
     bootstrap-servers:
-      - ${KAFKA_SERVER_URL}
+      - kafka:9092
     template:
       default-topic: NOTIFICATION_TOPIC
     consumer:
       group-id: topicgroupid
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      # Add consumer configuration for large messages
       properties:
         fetch.message.max.bytes: 1300000000
         max.partition.fetch.bytes: 1300000000
@@ -74,7 +72,6 @@ spring:
         json:
           type:
             mapping: Notification:io.digiservices.notificationservice.domain.Notification
-      # Add global properties for handling large messages
       fetch.message.max.bytes: 1300000000
 
 eureka:
@@ -82,23 +79,18 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
+      defaultZone: http://admin:admin2711@discoveryserver:5002/eureka/
 
 ui:
   app:
-    url: ${UI_APP_URL}
-
+    url: http://localhost:4200
 
 key:
-  private: ${PRIVATE_KEY}
-  public: ${PUBLIC_KEY}
-
+  private: private.key
+  public: public.key
 
 server:
   port: 8086
 
 jwks:
-  uri: ${JWKS_URI}
-
-
-
+  uri: http://authorizationserver:8080/oauth2/jwks

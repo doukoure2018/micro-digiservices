@@ -11,7 +11,7 @@ spring:
         composite-indicator:
           enabled: true
   profiles:
-    active: ${ACTIVE_PROFILE:dev}
+    active: 8087
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
     username: ${POSTGRES_USER}

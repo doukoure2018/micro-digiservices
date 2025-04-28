@@ -10,12 +10,10 @@ spring:
       client:
         composite-indicator:
           enabled: true
-  profiles:
-    active: ${ACTIVE_PROFILE:dev}
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://postgresdb:5432/localdb
+    username: user2711
+    password: admin2711
     hikari:
       connection-test-query: SELECT 1
   main:
@@ -33,18 +31,17 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: ${POSTGRES_DATABASE}
+        default_schema: localdb
 
   kafka:
     bootstrap-servers:
-      - ${KAFKA_SERVER_URL}
+      - kafka:9092
     template:
       default-topic: NOTIFICATION_TOPIC
     producer:
       group-id: topicgroupid
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      # Add producer configuration for large messages
       properties:
         max.request.size: 1300000000
     properties:
@@ -52,7 +49,6 @@ spring:
         json:
           type:
             mapping: Notification:io.digiservices.userservice.domain.Notification
-      # Add global properties for handling large messages
       message.max.bytes: 1300000000
       max.request.size: 1300000000
 
@@ -61,22 +57,18 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
+      defaultZone: http://admin:admin2711@discoveryserver:5002/eureka/
 
 ui:
   app:
-    url: ${UI_APP_URL}
-
+    url: http://localhost:4200
 
 key:
-  private: ${PRIVATE_KEY}
-  public: ${PUBLIC_KEY}
-
+  private: private.key
+  public: public.key
 
 server:
   port: 8085
 
 jwks:
-  uri: ${JWKS_URI}
-
-
+  uri: http://authorizationserver:8080/oauth2/jwks
