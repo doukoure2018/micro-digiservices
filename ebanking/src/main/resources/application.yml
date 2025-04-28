@@ -16,8 +16,6 @@ spring:
   cloud:
     config:
       enabled: false
-  profiles:
-    active: default
 
 application:
   title: ${APPLICATION_TITLE}

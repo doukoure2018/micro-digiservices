@@ -10,8 +10,7 @@ spring:
       client:
         composite-indicator:
           enabled: true
-  profiles:
-    active: ${ACTIVE_PROFILE:dev}
+
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
     username: ${POSTGRES_USER}
