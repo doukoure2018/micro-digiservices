@@ -2,12 +2,13 @@ spring:
   application:
     name: discoveryserver
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-    username: ${POSTGRES_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/localdb
+    username: user2711
+    password: admin2711
     hikari:
       connection-test-query: SELECT 1
-
+  profiles:
+    active: default
   jpa:
     database: POSTGRESQL
     open-in-view: false
@@ -20,7 +21,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQL82Dialect
-        default_schema: ${POSTGRES_DATABASE}
+        default_schema: localdb
 eureka:
   instance:
     hostname: localhost
@@ -29,8 +30,9 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
     service-url:
-      defaultZone: http://${USER_NAME}:${PASSWORD}@${eureka.instance.hostname}:${server.port}/eureka/
+      defaultZone: http://admin:admin2711@localhost:5002/eureka/
   server:
+    expected-client-renewal-interval-seconds: 10
     enable-self-preservation: false
     renewal-percent-threshold: 0.33
     wait-time-in-ms-when-sync-empty: 0
@@ -38,4 +40,3 @@ eureka:
 
 server:
   port: 5002
-

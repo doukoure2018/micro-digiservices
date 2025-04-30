@@ -34,9 +34,9 @@ public class EmailServiceImpl implements EmailService {
     public static final String PASSWORD_RESET_REQUEST = "Password Reset Request";
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
-    @Value("${VERIFY_EMAIL_HOST}")
+    @Value("${verify.email.host}")
     private String host;
-    @Value("${EMAIL_ID}")
+    @Value("${spring.mail.username}")
     private String fromEmail;
 
     @Override

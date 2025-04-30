@@ -25,7 +25,7 @@ spring:
 
 eureka:
   instance:
-    hostname: discoveryserver  # Changed from localhost to the container name
+    hostname: discoveryserver
     prefer-ip-address: true
   client:
     fetch-registry: false

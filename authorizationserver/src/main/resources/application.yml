@@ -10,11 +10,13 @@ spring:
       client:
         composite-indicator:
           enabled: true
+  profiles:
+    active: default
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/localdb
+    username: user2711
+    password: admin2711
     hikari:
       connection-test-query: SELECT 1
   main:
@@ -32,26 +34,24 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: ${POSTGRES_DATABASE}
+        default_schema: localdb
 
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://${USER_NAME}:${PASSWORD}@localhost:5002/eureka/
+      defaultZone: http://admin:admin2711@localhost:5002/eureka/
 
 ui:
   app:
-    url: ${UI_APP_URL}
+    url: http://localhost:4200
 
 
 key:
-  private: ${PRIVATE_KEY}
-  public: ${PUBLIC_KEY}
+  private: private.key
+  public: public.key
 
 
 server:
   port: 8080
-
-
