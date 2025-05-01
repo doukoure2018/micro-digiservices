@@ -72,11 +72,19 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     healthcheck:
-      test: [ "CMD", "curl", "-f", "-u", "admin:admin2711", "http://localhost:5002/eureka/apps" ]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "-u",
+          "admin:admin2711",
+          "http://localhost:5002/eureka/apps",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -88,7 +96,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
@@ -100,7 +108,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
@@ -113,7 +121,7 @@ services:
     ports:
       - "8085:8085"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
@@ -127,7 +135,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
@@ -139,7 +147,7 @@ services:
     ports:
       - "8087:8087"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
@@ -152,7 +160,7 @@ services:
     ports:
       - "8086:8086"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - spring
     depends_on:
